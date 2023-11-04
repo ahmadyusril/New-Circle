@@ -5,8 +5,11 @@ export default new class FollowController {
     create(req: Request, res: Response) {
         FollowServices.create(req, res);
     }
+    findById(req: Request, res: Response) {
+        FollowServices.findById(req, res)
+    }
 
-    // delete(req: Request, res: Response) {
-    //     FollowServices.delete(req, res);
-    // }
+    delete(req: Request, res: Response) {
+        FollowServices.delete(req, res);
+    }
 }

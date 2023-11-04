@@ -1,9 +1,11 @@
-import * as express from 'express';
+import { Router } from 'express';
 import FollowControllers from '../controllers/FollowControllers';
+import AuthMiddlewares from '../middlewares/JwtAuth';
 
-const FollowRoutes = express.Router();
+const FollowRoutes = Router();
 
-FollowRoutes.post('/follow', FollowControllers.create)
-// FollowRoutes.delete('/unfollow/:id', FollowControllers.delete)
+FollowRoutes.post('/follow', AuthMiddlewares.Authentification, FollowControllers.create)
+FollowRoutes.get('/follow/:id', FollowControllers.findById)
+FollowRoutes.delete('/unfollow/:id', FollowControllers.delete)
 
 export default FollowRoutes;

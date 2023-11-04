@@ -18,7 +18,7 @@ export default new class LikeServices {
             const likeSelected = await this.LikeRepository.findOne({
                 where: {
                     user: {
-                        id:res.locals.loginSession.user.id,
+                        id: res.locals.loginSession.user.id,
                     },
                     thread: {
                         id: value.thread,
