@@ -11,6 +11,7 @@ import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
 import Main from "./layout/AppLayout";
 import ThreadDetail from "./features/threads/components/ThreadDetail";
+import Follows from "./pages/Profile/Profile";
 
 const theme = extendTheme({
   styles: {
@@ -26,8 +27,8 @@ const theme = extendTheme({
 });
 
 function App() {
-  const auth = useSelector((state: RootState) => state.auth);
-  console.log(auth);
+  // const auth = useSelector((state: RootState) => state.auth);
+  // console.log(auth);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const dispatch = useDispatch();
@@ -83,6 +84,8 @@ function App() {
             <Route element={<IsNotLogin />}>
               <Route path="/" element={<Home />} />
               <Route path="/thread/:id" element={<ThreadDetail />} />
+              <Route path="/search" element={<Home />} />
+              <Route path="/follows" element={<Follows />} />
             </Route>
 
             <Route path="/" element={<IsLogin />}>

@@ -13,11 +13,11 @@ import { BiImageAdd } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/type/RootState";
 import { usePostReply } from "../hooks/PostReplyHook";
-import { FormReplyType } from "@/types/ReplyType";
+import { ReplyType } from "@/types/ReplyType";
 
 type RepliesProps = {
 	threadReply: {
-		replies: FormReplyType[];
+		replies: ReplyType[];
 	};
 };
 
@@ -97,7 +97,7 @@ export default function FormReplyFeature({ threadReply }: RepliesProps) {
 					</HStack>
 				</FormControl>
 			</form>
-			{threadReply.replies.map((reply: FormReplyType) => (
+			{threadReply.replies.map((reply: ReplyType) => (
 				<Box key={reply.id} px="12" pt="3">
 					<Box display="flex" gap="8px">
 						<Avatar

@@ -1,3 +1,4 @@
+import { follower, following } from "./FollowType";
 export type UserType = {
   id: number;
   email: string;
@@ -6,6 +7,8 @@ export type UserType = {
   profile_description: string;
   username: string;
   profile_picture?: string;
+  followers?: follower[]
+  following?: following[]
 };
 
 export type UserRegisterType = {

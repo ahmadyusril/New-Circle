@@ -12,15 +12,19 @@ export default new class FollowService {
 
     async create(req: Request, res: Response): Promise<Response> {
         try {
-            const data = req.body;
+            const id = Number(req.params.id);
+            if (id) {
+                return res.status(400).json({ message: "Invalid ID" });
+            }
             const following = await this.UserRepository.findOne({
                 where: {
                     id: res.locals.loginSession.following_id
                 }
             });
             const follower = await this.UserRepository.findOne({
-                where: {
-                    id: res.locals.loginSession.follower_id
+                where: { 
+                    id
+                    // id: res.locals.loginSession.follower_id
                 }
             });
 
@@ -61,18 +65,6 @@ export default new class FollowService {
                         })
                     );
             }
-
-            // return await this.FollowingRepository.save(newFollow)
-            //     .then(() =>
-            //         res.status(201).json({ message: "succesfully following" })
-            //     )
-            //     .catch((error) =>
-            //         res.status(500).json({
-            //             status: "Failed",
-            //             message: "Something error while following",
-            //             error,
-            //         })
-            //     );
         } catch (error) {
             return res.status(500).json({ message: "Error while create following", error });
         }
@@ -83,7 +75,10 @@ export default new class FollowService {
             const id = Number(req.params.id);
             const following = await this.UserRepository.findOne({
                 where: { id: id },
-                relations: ["following", "follower"],
+                relations: {
+                    following: true,
+                    follower: true,
+                }
             })
             return res.status(200).json(following);
         } catch (error) {

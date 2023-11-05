@@ -56,11 +56,14 @@ export default new class UserService {
         try {
             const id = Number(req.params.id);
             const user = await this.UserRepository.findOne({
+                relations: ["following", "follower"],
                 where: {id:id}
             });
             return res.status(200).json(user);
         }   catch (error) {
-            return res.status(400).json({ error: error.details[0].message });
+            console.log(error);
+            
+            return res.status(400).json({ error: error });
         }
     } 
 

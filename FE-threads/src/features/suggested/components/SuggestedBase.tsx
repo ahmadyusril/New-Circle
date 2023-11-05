@@ -4,7 +4,7 @@ import { useState } from 'react'
 interface IProps {
     full_name: string
     username: string
-    status: string
+    status  : string
 }
 function SuggestedBase(props: IProps) {
     const { full_name, status, username } = props
