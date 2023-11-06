@@ -9,6 +9,10 @@ export default new class UserController {
     findById(req: Request, res: Response) {
         UserService.findById(req, res)
     }
+
+    findByAuth(req: Request, res: Response) {
+        UserService.findByAuth(req, res)
+    }
     
     find(req: Request, res: Response) {
         UserService.find(req, res);

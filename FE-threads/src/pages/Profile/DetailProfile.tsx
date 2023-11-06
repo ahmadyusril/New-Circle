@@ -1,24 +1,19 @@
 import { API } from "@/config/api";
-import {
-	Avatar,
-	Box,
-	Card,
-	Flex,
-	HStack,
-	Stack,
-	Text,
-} from "@chakra-ui/react";
+import { Avatar, Box, Card, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
-function Profile(id: number) {
-	const { data: Profile } = useQuery({
-		queryKey: ["profile"],
+function DetailProfile() {
+	const { id } = useParams();
+
+	const { data: detailProfile } = useQuery({
+		queryKey: ["detailProfile"],
 		queryFn: async () => {
 			const { data } = await API.get(`/user/${id}`);
 			return data.data;
 		},
 	});
-	// console.log(Profile);
+	console.log(detailProfile);
 
 	return (
 		<Box display="flex" flexDirection="column" gap={5}>
@@ -36,7 +31,11 @@ function Profile(id: number) {
 						p={1}
 						bg="blackAlpha.800"
 						rounded="full">
-						<Avatar w={"100px"} h={"100px"} src={Profile?.profile_picture} />
+						<Avatar
+							w={"100px"}
+							h={"100px"}
+							src={detailProfile?.profile_picture}
+						/>
 					</Box>
 				</Box>
 
@@ -44,29 +43,33 @@ function Profile(id: number) {
 					<Flex gap={4}>
 						<Flex align={"center"}>
 							<Text mt={3} fontSize="2xl" fontWeight="semibold" color="white">
-								{Profile?.full_name}
+								{detailProfile?.full_name}
 							</Text>
 						</Flex>
 						<Flex align={"center"} mt={"6px"}>
 							<Text mt={3} fontSize="lg" color="whiteAlpha.600">
-								@{Profile?.username}
+								@{detailProfile?.username}
 							</Text>
 						</Flex>
 					</Flex>
 					<Text fontSize="sm" color="whiteAlpha.800">
-						{!Profile?.bio ? (
+						{!detailProfile?.bio ? (
 							<Text>Bio Kosong</Text>
 						) : (
-							<Text>{Profile?.profile_description}</Text>
+							<Text>{detailProfile?.profile_description}</Text>
 						)}
 					</Text>
 					<HStack fontSize={"md"} mt={"50px"}>
 						<HStack>
-							<Text color="whiteAlpha.800">{Profile?.followings?.length}</Text>
+							<Text color="whiteAlpha.800">
+								{detailProfile?.followings?.length}
+							</Text>
 							<Text color="whiteAlpha.600">Following</Text>
 						</HStack>
 						<HStack>
-							<Text color="whiteAlpha.800">{Profile?.followers.length}</Text>
+							<Text color="whiteAlpha.800">
+								{detailProfile?.followers.length}
+							</Text>
 							<Text color="whiteAlpha.600">Followers</Text>
 						</HStack>
 					</HStack>
@@ -76,4 +79,4 @@ function Profile(id: number) {
 	);
 }
 
-export default Profile;
+export default DetailProfile;

@@ -4,12 +4,13 @@ import {
     Column, CreateDateColumn, 
     UpdateDateColumn,
     OneToMany,
-    JoinColumn 
+    ManyToMany,
+    JoinColumn,
+    JoinTable,
 } from "typeorm"
 import { Thread } from "./thread"
 import { Like } from "./like";
 import { Reply } from "./reply";
-import { Following } from "./following";
 
 @Entity({ name: "user" })
 export class User {
@@ -50,24 +51,41 @@ export class User {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
     })
+    @JoinColumn()
     likes: Like[]
 
     @OneToMany(() => Reply, (replies) => replies.user, {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
     })
+    @JoinColumn()
     replies: Reply[];
 
-    @OneToMany(() => Following, (follows) => follows.user, {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+    @ManyToMany(() => User, (user) => user.user)
+    @JoinTable({
+        name: "following",
+        joinColumn: {
+            name: "following_id",
+            referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+            name: "follower_id",
+            referencedColumnName: "id",
+        },
     })
-    following: Following[];
+    user: User[];
 
-    @OneToMany(() => Following, (follows) => follows.userd, {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    })
-    follower: Following[];
+
+    // @OneToMany(() => Following, (follows) => follows.user, {
+    //     onDelete: "CASCADE",
+    //     onUpdate: "CASCADE",
+    // })
+    // following: Following[];
+
+    // @OneToMany(() => Following, (follows) => follows.userd, {
+    //     onDelete: "CASCADE",
+    //     onUpdate: "CASCADE",
+    // })
+    // follower: Following[];
 
 }

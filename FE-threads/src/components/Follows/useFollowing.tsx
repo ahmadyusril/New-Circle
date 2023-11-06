@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function useFollowingData(id: number) {
 	const { data: userFollowingData, isLoading } = useQuery({
-		queryKey: ["following"],
+		queryKey: ["following_id"],
 		queryFn: async () => {
 			const { data } = await API.get(`/follow/${id}`);
 			console.log(data.data.followings);	
@@ -17,10 +17,10 @@ export function useFollowingData(id: number) {
 
 export function useFollowerData(id: number) {
 	const { data: userFollowerData, isLoading, error } = useQuery({
-		queryKey: ["follower"],
+		queryKey: ["follower_id"],
 		queryFn: async () => {
 			const { data } = await API.get(`/follow/${id}`);
-			// console.log(data.data);
+			console.log(data.data);
 
 			return data.data.followers;
 		},

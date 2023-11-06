@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import FollowServices from "../services/FollowServices";
 
 export default new class FollowController {
-    create(req: Request, res: Response) {
-        FollowServices.create(req, res);
+    follow(req: Request, res: Response) {
+        FollowServices.follow(req, res);
     }
-    findById(req: Request, res: Response) {
-        FollowServices.findById(req, res)
-    }
+    // findById(req: Request, res: Response) {
+    //     FollowServices.findById(req, res)
+    // }
 
-    delete(req: Request, res: Response) {
-        FollowServices.delete(req, res);
-    }
+    // delete(req: Request, res: Response) {
+    //     FollowServices.delete(req, res);
+    // }
 }

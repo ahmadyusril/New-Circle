@@ -3,7 +3,6 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entities/user";
 import { Request, Response } from "express";
 import { createUserSchema, updateUserSchema } from "../utils/validator/User";
-import { v2 as cloudinary } from "cloudinary";
 import { deleteFile } from "../utils/FileHelper";
 import { uploadToCloudinary } from "../utils/Cloudinary";
 
@@ -28,7 +27,7 @@ export default new class UserService {
                 return res.status(400).json({ error: "User already exist" });
             }
 
-            const user = await this.UserRepository.create({
+            const obj = await this.UserRepository.create({
                 full_name: value.full_name,
 				username: value.username,
 				email: value.email,
@@ -36,7 +35,7 @@ export default new class UserService {
 				profile_picture: value.profile_picture,
 				profile_description: value.profile_description,
             });
-            const createUser = await this.UserRepository.save(user);
+            const createUser = await this.UserRepository.save(obj);
             return res.status(200).json(createUser);
         }   catch (error) {
             return res.status(400).json({ error: error.details[0].message });
@@ -45,9 +44,38 @@ export default new class UserService {
 
     async find(req: Request, res: Response): Promise<Response> {
         try {
-            const users = await this.UserRepository.find();
-            return res.status(200).json(users);
+            const user = await this.UserRepository.find();
+
+            const followings = await this.UserRepository.query(
+				"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id"
+			);
+			const followers = await this.UserRepository.query(
+				"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.follower_id "
+			);
+
+            const userMap = user.map((user) => {
+				const followingsPersonal = followings.filter((following) => {
+					return following.follower_id === user.id;
+				});
+				const followersPersonal = followers.filter((follower) => {
+					return follower.following_id === user.id;
+				});
+
+				return {
+					...user,
+					followings: followingsPersonal,
+					followers: followersPersonal,
+				};
+			});
+            
+            return res.status(200).json({
+                status: "success",
+                message: "Find user success",
+                data: userMap, 
+            });
         }   catch (error) {
+            console.log(error);
+            
             return res.status(500).json({ error: "Error while find users" });
         }
     }
@@ -56,14 +84,71 @@ export default new class UserService {
         try {
             const id = Number(req.params.id);
             const user = await this.UserRepository.findOne({
-                relations: ["following", "follower"],
-                where: {id:id}
+                where: { id },
             });
-            return res.status(200).json(user);
-        }   catch (error) {
-            console.log(error);
+
+            if (!user) {
+                return res.status(404).json({ error: "ID not found" });
+            }
+
+            const followings = await this.UserRepository.query(
+				"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
+				[id]
+			);
+			const followers = await this.UserRepository.query(
+				"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
+				[id]
+			); 
+
+            return res.status(200).json({
+                status: "success",
+                message: "Find user success",
+                data: {
+                    ...user,
+                    followings,
+                    followers,  
+                }
+            });
+        }   catch (error) {        
+            return res.status(500).json({Error: `Error while find user by id ${error.message}` });
+        }
+    } 
+
+    async findByAuth(req: Request, res: Response): Promise<Response> {
+        try {
+            const loginSession = res.locals.loginSession;
+            const user: User | null = await this.UserRepository.findOne({
+                where: {
+                    id: loginSession.user.id,
+                },
+            });
+
+            if (!user)
+				return res.status(400).json({
+					Error: `User with ID ${res.locals.loginSession.user.id} not found`,
+				});
+
+			const followings = await this.UserRepository.query(
+				"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
+				[loginSession.user.id]
+			);
             
-            return res.status(400).json({ error: error });
+			const followers = await this.UserRepository.query(
+				"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
+				[loginSession.user.id]
+			);
+
+            return res.status(200).json({
+                status: "success",
+                message: "find user by auth success",
+                data: {
+                    ...user,
+                    followers,
+                    followings,
+                },
+            });
+        }   catch (error) {     
+            return res.status(400).json({ Error: error.message });
         }
     } 
 
@@ -125,8 +210,5 @@ export default new class UserService {
         }   catch (error) {
             return res.status(400).json({ error: error.details[0].message})
         }
-    }
-    
-    
-    
+    }  
 }

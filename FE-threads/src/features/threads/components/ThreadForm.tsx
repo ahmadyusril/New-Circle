@@ -35,11 +35,11 @@ export default function ThreadForm() {
 				<HStack
 					mt={5}
 					justify="space-between"
-					mb={15}
-					// bg={"#333333"}
 					border={"1px solid white"}
 					p={5}
-					rounded={"full"}>
+					rounded={"full"}
+						
+					>
 					<HStack w={"full"}>
 						<Avatar
 							size="lg"
