@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -11,41 +10,44 @@ import {
   StackDivider,
   Text,
 } from "@chakra-ui/react";
-import { useFollowerData } from "./useFollowing";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/type/RootState";
+import { useGetFollower } from "../hooks/FollowsHook";
+import Spinner from "@/components/Spinner";
 
 export default function Followers() {
-  const user = useSelector((state: RootState) => state.auth);
-  const { userFollowerData } = useFollowerData(user.id);
+  const { getFollower, isLoading } = useGetFollower();
+  if (isLoading) return <Spinner />;
 
-  const followers = userFollowerData;
+  // const { followers } = getFollower;
+  // console.log(followers);
 
-  console.log(followers);
   return (
     <Box>
       <Card bgColor="gray.700" color="gray.100">
         <CardHeader>
           <Heading size="md">
-            Your Followers: {followers?.followers?.length}
+            Your Followers: {getFollower?.data?.followers?.length}
           </Heading>
         </CardHeader>
         <CardBody>
           <Stack divider={<StackDivider />} spacing="4">
-            {followers?.map((follower: any) => {
+            {getFollower?.follower?.map((follower: any) => {
               return (
-                <Box key={follower.id}>
+                <Box key={follower?.id}>
                   <Flex gap="4">
                     <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-                      <Avatar src={follower.profile_picture} size="sm" />
+                      <Avatar
+                        name={follower?.full_name}
+                        src={follower?.profile_picture}
+                        size="sm"
+                      />
                       <Box>
-                        <Heading size="sm">{follower.full_name}</Heading>
+                        <Heading size="sm">{follower?.full_name}</Heading>
                         <Text fontSize={"sm"} color={"whiteAlpha.500"}>
-                          @{follower.username}
+                          @{follower?.username}
                         </Text>
                         <Text fontSize="sm">
-                          {follower.profile_description
-                            ? follower.profile_description
+                          {follower?.profile_description
+                            ? follower?.profile_description
                             : "Tidak ada deskripsi profil"}
                         </Text>
                       </Box>

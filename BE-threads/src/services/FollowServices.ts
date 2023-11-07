@@ -96,6 +96,7 @@ export default new class FollowService {
             if (!user) {
                 return res.status(404).json({ Error: `User not found`})
             }
+            return res.status(200).json({ status: "success", data: user.follower });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ Error: `Something wrong while get followers` });

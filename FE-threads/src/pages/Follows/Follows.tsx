@@ -1,14 +1,37 @@
-import FollowsTab from "@/components/Follows/FollowsTab";
-import { Heading } from "@chakra-ui/react";
-// import FollowsTab from "../features/Follows/FollowsTab";
+import {
+  Box,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@chakra-ui/react";
+import Following from "@/features/follow/components/Following";
+import Followers from "@/features/follow/components/Followers";
 
-export default function Follows() {
+export default function Follow() {
+
   return (
-    <>
-      <Heading color={"gray.100"} size="xl" pb={8}>
-        Follows
-      </Heading>
-      <FollowsTab />
-    </>
+
+      <>
+          <Box>
+              <Tabs
+              >
+                  <TabList>
+                      <Tab color={"white"}>Following</Tab>
+                      <Tab color={"white"}>Follower</Tab>
+                  </TabList>
+
+                  <TabPanels>
+                      <TabPanel>
+                          <Following />
+                      </TabPanel>
+                      <TabPanel>
+                          <Followers />
+                      </TabPanel>
+                  </TabPanels>
+              </Tabs>
+          </Box>
+      </>
   );
 }
