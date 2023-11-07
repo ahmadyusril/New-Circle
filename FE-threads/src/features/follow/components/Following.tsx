@@ -26,7 +26,7 @@ export default function Following() {
       <Card bgColor="gray.700" color="gray.100">
         <CardHeader>
           <Heading size="md">
-            Users that you follow: {following?.data?.following?.length}
+            Users that you follow: {following?.length}
           </Heading>
         </CardHeader>
         <CardBody>

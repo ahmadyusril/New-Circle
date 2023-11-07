@@ -17,15 +17,15 @@ export default function Followers() {
   const { getFollower, isLoading } = useGetFollower();
   if (isLoading) return <Spinner />;
 
-  // const { followers } = getFollower;
-  // console.log(followers);
+  const { follower } = getFollower;
+  console.log(follower);
 
   return (
     <Box>
       <Card bgColor="gray.700" color="gray.100">
         <CardHeader>
           <Heading size="md">
-            Your Followers: {getFollower?.data?.followers?.length}
+            Your Followers: {follower?.length}
           </Heading>
         </CardHeader>
         <CardBody>

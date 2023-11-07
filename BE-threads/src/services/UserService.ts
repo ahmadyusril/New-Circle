@@ -47,29 +47,6 @@ export default new class UserService {
             const user = await this.UserRepository.find({
                 relations: ['following', 'follower','threads'],
             });
-
-
-            // const followings = await this.UserRepository.query(
-			// 	"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id"
-			// );
-			// const followers = await this.UserRepository.query(
-			// 	"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.follower_id "
-			// );
-
-            // const userMap = user.map((user) => {
-			// 	const followingsPersonal = followings.filter((following) => {
-			// 		return following.follower_id === user.id;
-			// 	});
-			// 	const followersPersonal = followers.filter((follower) => {
-			// 		return follower.following_id === user.id;
-			// 	});
-
-			// 	return {
-			// 		...user,
-			// 		followings: followingsPersonal,
-			// 		followers: followersPersonal,
-			// 	};
-			// });
             
             return res.status(200).json({
                 status: "success",
