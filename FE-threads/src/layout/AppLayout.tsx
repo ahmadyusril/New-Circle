@@ -5,7 +5,7 @@ import SuggestedComponent from "@/components/Suggested/Suggested";
 import { Outlet } from "react-router-dom";
 import FooterComponent from "@/components/Footer/Footer";
 
-function Home() {
+export default function Main() {
     return (
         <Grid gridTemplateColumns="270px 1.5fr 1.1fr" bg="blackAlpha.800" h="100vh" >
             
@@ -30,7 +30,6 @@ function Home() {
     );
 }
 
-export default Home;
 
  // // const navigate = useNavigate();
     // const [detail, setDetail] = useState(false);

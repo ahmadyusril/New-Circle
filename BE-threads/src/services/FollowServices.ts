@@ -2,6 +2,7 @@ import { AppDataSource } from "../data-source";
 import { Repository } from "typeorm";
 import { Request, Response } from "express";
 import { User } from "../entities/user";
+import { followingSchema } from "../utils/validator/Follow";
 
 export default new class FollowService {
     private readonly UserRepository: Repository<User>
@@ -9,66 +10,52 @@ export default new class FollowService {
 
     async follow(req: Request, res: Response): Promise<Response> {
         try {
-            const userId = Number(req.params.userId);
-            const user = res.locals.loginSession;
+            const userId = res.locals.loginSession.user.id;
+            const { error, value } = followingSchema.validate(req.body);
+            // const user = res.locals.loginSession;
 
-            if (userId) {
-                console.log(userId);
+            if (error) {
+                console.log(error);
 
                 return res.status(400).json({ Error: `ID not valid` });
             }
-            const following: User | null = await this.UserRepository.findOne({
+            const user = await this.UserRepository.findOne({
                 where: {
                     id: userId,
                 },
+                relations: ["following"]
             });
-            if (!following) {
-                return res.status(400).json({
-                    Error: `User with ID ${userId} not found`,
-                });
-            }
-            const follower: User | null = await this.UserRepository.findOne({
+            const userToFollow = await this.UserRepository.findOne({
                 where: {
-                    id: user.user.id,
+                    id: value.user,
                 },
             });
-            if (!follower) {
-                return res.status(400).json({
-                    Error: `User with ID ${res.locals.loginSession.user.id} not found`,
+            if (!user || !userToFollow) {
+                return res.status(404).json({
+                    Error: `User not found`,
                 });
             }
 
-            if (follower.id === following.id) {
-                return res.status(400).json({
-                    Error: `You can't follow yourself`,
-                })
-            }
-
-            const checkFollow = await this.UserRepository.query(
-                "SELECT * FROM following WHERE following_id=$1 AND follower_id=$2",
-                [following.id, follower.id],
+            const checkFollow = user.following.some(
+               (followedUser) => followedUser.id === value.user
             );
 
-            if (checkFollow.length) {
-                await this.UserRepository.query(
-                    "DELETE FROM following WHERE following_id=$1 AND follower_id=$2",
-                    [following.id, follower.id],
+            if (checkFollow) {
+                user.following = user.following.filter(
+                    (followedUser) => followedUser.id !== value.user
                 );
-
-                return res.status(200).json({
-                    status: "success",
-                    message: "undo follow user success",
-                });
-
+            }   else {
+                user.following.push(userToFollow);
             }
 
-            await this.UserRepository.query(
-                "INSERT INTO following(following_id, follower_id) VALUES($1, $2)",
-				[following.id, follower.id]
-            );
+            await this.UserRepository.save(user);
+
+            const message = checkFollow
+            ? "Unfollowed"
+            : "Followed"
+        
             return res.status(200).json({
                 status: "Success",
-                message: "Following",
             });
 
         } catch (error) {
@@ -76,42 +63,42 @@ export default new class FollowService {
         }
     }
 
-    // async findById(req: Request, res: Response): Promise<Response> {
-    //     try {
-    //         const id = Number(req.params.id);
-    //         const following = await this.UserRepository.findOne({
-    //             where: { id: id },
-    //             relations: {
-    //                 following: true,
-    //                 follower: true,
-    //             }
-    //         })
-    //         return res.status(200).json(following);
-    //     } catch (error) {
-    //         return res.status(500).json({ message: "Error while find following", error });
-    //     }
-    // }
+    async getFollowing(req: Request, res: Response): Promise<Response> {
+        try {
+            const userId = res.locals.loginSession.user.id;
+            const user = await this.UserRepository.findOne({
+                where: {
+                    id: userId,
+                },
+                relations: ["following"]
+            });
 
-    // async delete(req: Request, res: Response): Promise<Response> {
-    //     try {
-    //         const data = req.body;
-    //         const following = await this.UserRepository.findOne({
-    //             where: { id: data.following_id },
-    //             relations: ["following", "follower"],
-    //         });
-    //         if (!following) {
-    //             return res.status(404).json({ message: "following not found" });
-    //         }
-    //         const follower = await this.UserRepository.findOne({
-    //             where: { id: data.follower_id },
-    //             relations: ["following", "follower"],
-    //         });
+            if (!user) {
+                return res.status(404).json({ Error: `User not found` });
+            }
+            return res.status(200).json({data: user.following});
+        } catch(error) {
+            console.log(error);
+            return res.status(500).json({ Error: `Something wrong while get following` });       
+        }
+    }
 
-    //         const deleteFollow = await this.UserRepository.remove(following);
-    //         return res.status(200).json(deleteFollow);
+    async getFollowers(req: Request, res: Response): Promise<Response> {
+        try {
+            const userId = res.locals.loginSession.user.id;
+            const user = await this.UserRepository.findOne({
+                where: {
+                    id: userId,
+                },
+                relations: ["follower"]
+            });
 
-    //     } catch (error) {
-    //         return res.status(500).json({ message: "Error while delete following", error });
-    //     }
-    // }
-}
+            if (!user) {
+                return res.status(404).json({ Error: `User not found`})
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ Error: `Something wrong while get followers` });
+        }
+    }
+}();

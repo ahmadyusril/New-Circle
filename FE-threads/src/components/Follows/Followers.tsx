@@ -15,10 +15,9 @@ import { useFollowerData } from "./useFollowing";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/type/RootState";
 
-export default function Followers(id: number) {
-  const auth = useSelector((state: RootState) => state.auth);
-
-  const { userFollowerData } = useFollowerData(auth.id);
+export default function Followers() {
+  const user = useSelector((state: RootState) => state.auth);
+  const { userFollowerData } = useFollowerData(user.id);
 
   const followers = userFollowerData;
 

@@ -44,34 +44,37 @@ export default new class UserService {
 
     async find(req: Request, res: Response): Promise<Response> {
         try {
-            const user = await this.UserRepository.find();
+            const user = await this.UserRepository.find({
+                relations: ['following', 'follower','threads'],
+            });
 
-            const followings = await this.UserRepository.query(
-				"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id"
-			);
-			const followers = await this.UserRepository.query(
-				"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.follower_id "
-			);
 
-            const userMap = user.map((user) => {
-				const followingsPersonal = followings.filter((following) => {
-					return following.follower_id === user.id;
-				});
-				const followersPersonal = followers.filter((follower) => {
-					return follower.following_id === user.id;
-				});
+            // const followings = await this.UserRepository.query(
+			// 	"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id"
+			// );
+			// const followers = await this.UserRepository.query(
+			// 	"SELECT u.id, f.following_id, f.follower_id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.follower_id "
+			// );
 
-				return {
-					...user,
-					followings: followingsPersonal,
-					followers: followersPersonal,
-				};
-			});
+            // const userMap = user.map((user) => {
+			// 	const followingsPersonal = followings.filter((following) => {
+			// 		return following.follower_id === user.id;
+			// 	});
+			// 	const followersPersonal = followers.filter((follower) => {
+			// 		return follower.following_id === user.id;
+			// 	});
+
+			// 	return {
+			// 		...user,
+			// 		followings: followingsPersonal,
+			// 		followers: followersPersonal,
+			// 	};
+			// });
             
             return res.status(200).json({
                 status: "success",
                 message: "Find user success",
-                data: userMap, 
+                data: user
             });
         }   catch (error) {
             console.log(error);
@@ -84,30 +87,27 @@ export default new class UserService {
         try {
             const id = Number(req.params.id);
             const user = await this.UserRepository.findOne({
-                where: { id },
+                where: { id: id },
+                relations: ['following', 'follower','threads']
             });
 
             if (!user) {
                 return res.status(404).json({ error: "ID not found" });
             }
 
-            const followings = await this.UserRepository.query(
-				"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
-				[id]
-			);
-			const followers = await this.UserRepository.query(
-				"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
-				[id]
-			); 
+            // const followings = await this.UserRepository.query(
+			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
+			// 	[id]
+			// );
+			// const followers = await this.UserRepository.query(
+			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
+			// 	[id]
+			// ); 
 
             return res.status(200).json({
                 status: "success",
                 message: "Find user success",
-                data: {
-                    ...user,
-                    followings,
-                    followers,  
-                }
+                data: user
             });
         }   catch (error) {        
             return res.status(500).json({Error: `Error while find user by id ${error.message}` });
@@ -121,6 +121,7 @@ export default new class UserService {
                 where: {
                     id: loginSession.user.id,
                 },
+                relations: ['following', 'follower','threads']
             });
 
             if (!user)
@@ -128,24 +129,20 @@ export default new class UserService {
 					Error: `User with ID ${res.locals.loginSession.user.id} not found`,
 				});
 
-			const followings = await this.UserRepository.query(
-				"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
-				[loginSession.user.id]
-			);
+			// const followings = await this.UserRepository.query(
+			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
+			// 	[loginSession.user.id]
+			// );
             
-			const followers = await this.UserRepository.query(
-				"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
-				[loginSession.user.id]
-			);
+			// const followers = await this.UserRepository.query(
+			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture, u.bio FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
+			// 	[loginSession.user.id]
+			// );
 
             return res.status(200).json({
                 status: "success",
                 message: "find user by auth success",
-                data: {
-                    ...user,
-                    followers,
-                    followings,
-                },
+                data: user
             });
         }   catch (error) {     
             return res.status(400).json({ Error: error.message });

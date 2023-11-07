@@ -28,6 +28,9 @@ export default new class AuthServices {
                     "password",
                     "profile_description",
                     "profile_picture",
+                    "createdAt",
+                    "follower",
+                    "following",
                 ],
             });
             if (!isCheckedEmail) {

@@ -5,8 +5,9 @@ import * as express from "express"
 
 const FollowRoutes = express.Router();
 
-FollowRoutes.post('/follow/:userId', AuthMiddlewares.Authentification, FollowControllers.follow)
-// FollowRoutes.get('/follow/:id', AuthMiddlewares.Authentification, FollowControllers.findById)
-// FollowRoutes.delete('/unfollow/:id', AuthMiddlewares.Authentification, FollowControllers.delete)
+FollowRoutes.post('/follow', AuthMiddlewares.Authentification, FollowControllers.follow)
+FollowRoutes.get('/following', AuthMiddlewares.Authentification, FollowControllers.getFollowing)
+FollowRoutes.get('/follower', AuthMiddlewares.Authentification, FollowControllers.getFollowers)
+
 
 export default FollowRoutes;

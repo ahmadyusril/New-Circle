@@ -9,6 +9,9 @@ const initiaslState: UserType = {
 	username: "",
 	profile_picture: "",
 	profile_description: "",
+	followers: [],
+	following: [],
+
 };
 
 export const AuthSlice = createSlice({
@@ -28,6 +31,8 @@ export const AuthSlice = createSlice({
 				username: payload.username,
 				profile_description: payload.profile_description,
 				profile_picture: payload.profile_picture,
+				followers: payload.follower,
+				following: payload.following,
 			};
 
 			return user;
@@ -42,6 +47,8 @@ export const AuthSlice = createSlice({
 				username: payload.username,
 				profile_description: payload.profile_description,
 				profile_picture: payload.profile_picture,
+				followers: payload.follower,
+				following: payload.following,
 			};
 
 			return user;

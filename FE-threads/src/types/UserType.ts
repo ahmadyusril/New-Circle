@@ -6,9 +6,9 @@ export type UserType = {
   full_name: string;
   profile_description: string;
   username: string;
-  profile_picture?: string;
-  followers?: follower[]
-  following?: following[]
+  profile_picture: string;
+  followers: follower[]
+  following: following[]
 };
 
 export type UserRegisterType = {

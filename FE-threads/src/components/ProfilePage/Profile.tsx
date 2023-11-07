@@ -4,6 +4,7 @@ import { useSelector } from "react-redux"
 
 function ProfileComponent() {
     const user = useSelector((state: RootState) => state?.auth);
+
     return (
         <Card bg="whiteAlpha.200" p={4}>
             <Text color="white">My Profile</Text>
@@ -47,11 +48,11 @@ function ProfileComponent() {
                 <Text fontSize='sm' color='whiteAlpha.800'>{user.profile_description}</Text>
                 <HStack fontSize='sm'>
                     <HStack>
-                        <Text color='whiteAlpha.800'>100</Text>
+                        <Text color='whiteAlpha.800'>{ user.following?.length}</Text>
                         <Text color='whiteAlpha.600'>Following</Text>
                     </HStack>
                     <HStack>
-                        <Text color='whiteAlpha.800'>5000</Text>
+                        <Text color='whiteAlpha.800'>{user.followers?.length}</Text>
                         <Text color='whiteAlpha.600'>Followers</Text>
                     </HStack>
                 </HStack>
