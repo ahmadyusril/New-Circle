@@ -1,7 +1,7 @@
 import { Box, Grid, GridItem,} from "@chakra-ui/react";
 import NavbarComponent from "@/components/Navbar/Navbar";
 import ProfileComponent from "@/components/ProfilePage/Profile";
-import SuggestedComponent from "@/components/Suggested/Suggested";
+import SuggestedComponent from "@/features/suggested/components/Suggested";
 import { Outlet } from "react-router-dom";
 import FooterComponent from "@/components/Footer/Footer";
 

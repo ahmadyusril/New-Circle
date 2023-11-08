@@ -1,9 +1,8 @@
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Route, Routes, Navigate, useNavigate, Outlet } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { AUTH_CHECK, AUTH_ERROR } from "@/store/RootReducer";
-import { RootState } from "./store/type/RootState";
 import { API, SetAuthToken } from "./config/api";
 
 import Home from "./pages/Home/Home";
@@ -13,6 +12,7 @@ import Main from "./layout/AppLayout";
 import ThreadDetail from "./features/threads/components/ThreadDetail";
 import Follows from "./pages/Follows/Follows";
 import Profile from "./pages/Profile/Profile";
+import Search from "./pages/Search/Search";
 import DetailProfile from "./pages/Profile/DetailProfile";
 
 const theme = extendTheme({
@@ -86,7 +86,7 @@ function App() {
             <Route element={<IsNotLogin />}>
               <Route path="/" element={<Home />} />
               <Route path="/thread/:id" element={<ThreadDetail />} />
-              <Route path="/search" element={<Home />} />
+              <Route path="/search" element={<Search />} />
               <Route path="/follows" element={<Follows />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/detail-profile/:id" element={<DetailProfile />} />
