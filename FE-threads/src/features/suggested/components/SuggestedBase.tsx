@@ -3,28 +3,32 @@ import { useState } from "react";
 import { API } from "@/config/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetUser } from "../hooks/SuggestedHook";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/type/RootState";
 
 export default function SuggestedBase({
   user_id,
   full_name,
   username,
   profile_picture,
+  following,
+  follower,
 }: any) {
-  const [followId, setFollowId] = useState({
-    user_id: user_id,
+  const [follow, setFollow] = useState({
+    user: user_id,
   });
-
+  const signInUser = useSelector((state: RootState) => state?.auth);
   const { GetUser, isLoading } = useGetUser();
   const queryClient = useQueryClient();
 
   const { mutate: handleFollow } = useMutation({
     mutationFn: () => {
-      return API.post(`follow`, followId);
+      return API.post(`follow`, follow);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["Users"] });
+      queryClient.invalidateQueries({ queryKey: ["Suggest"] });
       queryClient.invalidateQueries({ queryKey: ["User"] });
-      queryClient.invalidateQueries({ queryKey: ["Follow"] });
+      queryClient.invalidateQueries({ queryKey: ["following"] });
     },
     onError: (error) => {
       console.log(error);
@@ -32,15 +36,18 @@ export default function SuggestedBase({
   });
 
   function handleClick() {
-    setFollowId({ user_id: user_id });
+    setFollow({ user: user_id });
     handleFollow();
   }
   if (isLoading) return <div>Loading....</div>;
 
-  const { following } = GetUser;
+  // const { following } = GetUser;
+  // console.log("ini following",GetUser);
+  
 
-  const isFollowing = following.some((follow: any) => follow.id === user_id);
-
+  const isFollowing = follower.some((follow: any) => follow.id === signInUser.id);
+  console.log("ini follower",follower);
+  
   return (
     <HStack justify="space-between">
       <HStack spacing={3}>

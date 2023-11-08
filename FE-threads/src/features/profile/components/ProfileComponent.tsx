@@ -1,9 +1,18 @@
 import { Avatar, Box, Button, Card, Flex, HStack, Stack, Text } from "@chakra-ui/react"
 import { RootState } from "@/store/type/RootState"
 import { useSelector } from "react-redux"
+import Spinner from "@/components/Spinner";
+import { useGetUser } from "../hooks/ProfileHook";
 
-function ProfileComponent() {
+export default function ProfileComponent() {
     const user = useSelector((state: RootState) => state?.auth);
+    console.log(user);
+    const { GetUser, isLoading } = useGetUser();
+
+    if (isLoading) {
+        return <Spinner />
+    }
+    const { following, follower } = GetUser
 
     return (
         <Card bg="whiteAlpha.200" p={4}>
@@ -46,13 +55,13 @@ function ProfileComponent() {
                 </Text>
                 <Text fontSize='xs' color='whiteAlpha.600'>@{user.username}</Text>
                 <Text fontSize='sm' color='whiteAlpha.800'>{user.profile_description}</Text>
-                <HStack fontSize='sm'>
+                <HStack mt={2} fontSize='sm'>
                     <HStack>
-                        <Text color='whiteAlpha.800'>{ user.following?.length}</Text>
+                        <Text color='whiteAlpha.800'>{following?.length}</Text>
                         <Text color='whiteAlpha.600'>Following</Text>
                     </HStack>
                     <HStack>
-                        <Text color='whiteAlpha.800'>{user.followers?.length}</Text>
+                        <Text color='whiteAlpha.800'>{follower?.length}</Text>
                         <Text color='whiteAlpha.600'>Followers</Text>
                     </HStack>
                 </HStack>
@@ -60,5 +69,3 @@ function ProfileComponent() {
         </Card>
     )
 }
-
-export default ProfileComponent

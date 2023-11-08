@@ -72,15 +72,6 @@ export default new class UserService {
                 return res.status(404).json({ error: "ID not found" });
             }
 
-            // const followings = await this.UserRepository.query(
-			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=f.following_id WHERE f.follower_id=$1",
-			// 	[id]
-			// );
-			// const followers = await this.UserRepository.query(
-			// 	"SELECT u.id, u.username, u.full_name, u.profile_picture FROM following as f INNER JOIN user as u ON u.id=follower_id WHERE f.following_id=$1",
-			// 	[id]
-			// ); 
-
             return res.status(200).json({
                 status: "success",
                 message: "Find user success",
