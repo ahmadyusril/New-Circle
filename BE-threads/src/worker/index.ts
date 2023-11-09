@@ -1,19 +1,21 @@
+import * as amqp from "amqplib";
+import "dotenv/config";
 import { AppDataSource } from "../data-source";
-import * as express from "express";
-import router from "../routes";
-const cors = require("cors");
+import cloudinary from "../utils/Cloudinary";
+import ThreadWorker from "./ThreadWorker";
 
-AppDataSource.initialize()
-	.then(async () => {
-		const app = express();
-		const PORT = 5000;
+export default new (class WorkerHub {
+	constructor() {
+		AppDataSource.initialize()
+			.then(async () => {
+				cloudinary.upload();
 
-		app.use(cors());
-		app.use(express.json());
-		app.use("/api/v1", router);
+				const connection = await amqp.connect(process.env.RABBIT_MQ);
 
-		app.listen(PORT, () => {
-			console.log(`server Running on PORT ${PORT}`);
-		});
-	})
-	.catch((error) => console.log(error));
+				// create worker anymore
+				const resp = await ThreadWorker.create(process.env.THREAD, connection);
+				console.log("test Response ", resp);
+			})
+			.catch((err) => console.log(err));
+	}
+})();

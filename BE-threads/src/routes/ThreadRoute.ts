@@ -1,7 +1,7 @@
 import * as express from 'express'
 import ThreadController from "../controllers/ThreadController";
 import AuthMiddlewares from "../middlewares/JwtAuth";
-import UploadFileMiddleware from '../middlewares/UploadFile';
+import { upload } from '../middlewares/UploadFile';
 
 const ThreadRoute = express.Router();
 
@@ -12,7 +12,7 @@ ThreadRoute.get("/threads", ThreadController.find)
 ThreadRoute.post(
     "/thread", 
     AuthMiddlewares.Authentification, 
-    UploadFileMiddleware.single("image"), 
+    upload("image"), 
     ThreadController.create)
 
 // find a thread by id
@@ -21,7 +21,7 @@ ThreadRoute.get("/thread/:id",ThreadController.findById)
 // update a thread
 ThreadRoute.patch("/thread/:id", 
 AuthMiddlewares.Authentification, 
-UploadFileMiddleware.single("image"),
+upload("image"),
  ThreadController.update)
  
 // delete a thread

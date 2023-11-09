@@ -12,10 +12,9 @@ export default new class MessageQueue {
             await channel.close();
             await connection.close();
 
-            return null
-
+            return null; 
         }   catch (error) {
-            return error
+            return error.message;
         }
     }
 }

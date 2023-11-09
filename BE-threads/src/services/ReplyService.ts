@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { createReplySchema, updateReplySchema } from "../utils/validator/Reply";
 import { v2 as cloudinary } from "cloudinary";
 import { deleteFile } from "../utils/FileHelper";
-import { uploadToCloudinary } from "../utils/Cloudinary";
+// import { uploadToCloudinary } from "../utils/Cloudinary";
 
 export default new class ReplyServices {
     private readonly ReplyRepository: Repository<Reply> =
@@ -22,13 +22,31 @@ export default new class ReplyServices {
                 return res.status(400).json({ error })
             };
             console.log(value);
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
+            })
+
             let image = ""
-            if (req.file?.filename) {
+            if (res.locals.filename) {
                 // save to cloudinary
-                image = await uploadToCloudinary(req.file);
+                image = res.locals.filename;
+                const cloudinaryResponse = await cloudinary.uploader.upload(
+                   `src/uploads/${image}`,
+                    { folder: "threads", }
+                );
+                image = cloudinaryResponse.secure_url
                 // delete file from local server after save to cloudinary
                 deleteFile(req.file.path);
             }
+            // let image = ""
+            // if (req.file?.filename) {
+            //     // save to cloudinary
+            //     image = await uploadToCloudinary(req.file);
+            //     // delete file from local server after save to cloudinary
+            //     deleteFile(req.file.path);
+            // }
             
             const reply = await this.ReplyRepository.create({
                 thread: value.thread_id,
@@ -120,9 +138,9 @@ export default new class ReplyServices {
             }
 
             cloudinary.config({
-                cloud_name: "dyzem32xh",
-                api_key: "466155932829577",
-                api_secret: "onY7SJxmy8f-sGqvqrgMXlbu-Ls",
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
             });
 
             const cloudinaryResponse = await cloudinary.uploader.upload(

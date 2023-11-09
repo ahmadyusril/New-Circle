@@ -1,7 +1,7 @@
 import { Router } from "express";
 import ReplyControllers from "../controllers/ReplyControllers";
 import AuthMiddlewares from "../middlewares/JwtAuth";
-import UploadFileMiddleware from "../middlewares/UploadFile";
+import { upload } from "../middlewares/UploadFile";
 
 const ReplyRouter = Router();
 // find all replies
@@ -11,7 +11,7 @@ ReplyRouter.get("/replies", ReplyControllers.find)
 ReplyRouter.post(
     "/reply",
      AuthMiddlewares.Authentification,
-     UploadFileMiddleware.single("image"),
+     upload("image"),
      ReplyControllers.create)
 
 // find a reply by id
@@ -20,7 +20,7 @@ ReplyRouter.get("/reply/:id", ReplyControllers.findById)
 // update a reply
 ReplyRouter.patch(
     "/reply/:id",
-    UploadFileMiddleware.single("image"),
+    upload("image"),
      ReplyControllers.update)
 
 // delete a reply

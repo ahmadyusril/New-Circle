@@ -4,7 +4,8 @@ import { User } from "../entities/user";
 import { Request, Response } from "express";
 import { createUserSchema, updateUserSchema } from "../utils/validator/User";
 import { deleteFile } from "../utils/FileHelper";
-import { uploadToCloudinary } from "../utils/Cloudinary";
+// import { uploadToCloudinary } from "../utils/Cloudinary";
+import { v2 as cloudinary} from "cloudinary"
 
 export default new class UserService {
     private readonly UserRepository: Repository<User> = 
@@ -120,6 +121,7 @@ export default new class UserService {
     async update(req: Request, res: Response): Promise<Response> {
         try {
             const id = Number(req.params.id);
+            const profile_picture = res.locals.filename
             const data = req.body;
             const { error } = updateUserSchema.validate(data);
             if (error) {
@@ -134,13 +136,18 @@ export default new class UserService {
                 return res.status(400).json({ error: error.details[0].message });
             }
             console.log(data);
-            let profile_picture = ""
-            if (req.file?.filename) {
-                // save to cloudinary
-                profile_picture = await uploadToCloudinary(req.file);
-                // delete file from local server after save to cloudinary
-                deleteFile(req.file.path);
-            }
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
+            });
+
+            const cloudinaryResponse = await cloudinary.uploader.upload(
+                `src/uploads/${profile_picture}`, { folder: "threads" }
+            );
+            console.log("cloudinary response", cloudinaryResponse);
+
+            deleteFile(req.file.path);
 
             const { username, full_name, email, password, profile_description } = req.body;
             user.username = username;

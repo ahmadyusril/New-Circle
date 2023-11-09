@@ -3,9 +3,9 @@ import { Thread } from "../entities/thread";
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { createThreadSchema, updateThreadSchema } from "../utils/validator/Thread";
-import { v2 as cloudinary } from 'cloudinary';
 import { deleteFile } from "../utils/FileHelper";
-import { uploadToCloudinary } from "../utils/Cloudinary";
+import { v2 as cloudinary } from "cloudinary";
+// import { uploadToCloudinary } from "../utils/Cloudinary";
 
 export default new class ThreadService {
     private readonly ThreadRepository: Repository<Thread> = AppDataSource.getRepository(Thread)
@@ -21,10 +21,21 @@ export default new class ThreadService {
                 return res.status(400).json({ error: error.details[0].message });
             }
             console.log(data);
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
+            })
+
             let image = ""
-            if (req.file?.filename) {
+            if (res.locals.filename) {
                 // save to cloudinary
-                image = await uploadToCloudinary(req.file);
+                image = res.locals.filename;
+                const cloudinaryResponse = await cloudinary.uploader.upload(
+                   `src/uploads/${image}`,
+                    { folder: "threads", }
+                );
+                image = cloudinaryResponse.secure_url
                 // delete file from local server after save to cloudinary
                 deleteFile(req.file.path);
             }
@@ -92,9 +103,9 @@ export default new class ThreadService {
                 return res.status(400).json({ error: error.details[0].message });
             }
             cloudinary.config({
-                cloud_name: "dyzem32xh",
-                api_key: "466155932829577",
-                api_secret: "onY7SJxmy8f-sGqvqrgMXlbu-Ls",
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
             });
 
             const cloudinaryResponse = await cloudinary.uploader.upload(
