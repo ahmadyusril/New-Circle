@@ -22,6 +22,10 @@ export default new class UserController {
         UserService.update(req, res);
     }
 
+    updateByAuth(req: Request, res: Response) {
+        UserService.updateByAuth(req, res);
+    }
+
     delete(req: Request, res: Response) {
         UserService.delete(req, res);
     }

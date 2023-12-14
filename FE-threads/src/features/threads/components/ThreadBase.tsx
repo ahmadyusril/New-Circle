@@ -47,7 +47,7 @@ function ThreadBase(props: ThreadType) {
     return (
         <Flex gap={3} borderBottom='1px solid gray' >
 
-            <Avatar size="sm" src={user.profile_picture} />
+            <Avatar size="sm" src={user?.profile_picture} />
 
             <Box mb={4}>
                 <HStack>
@@ -59,9 +59,9 @@ function ThreadBase(props: ThreadType) {
                         color="whiteAlpha.800"
                         cursor='pointer'
                     >
-                        {user.full_name}
+                        {user?.full_name}
                         <Text fontWeight="light" display="flex" color="whiteAlpha.600">
-                            @{user.username} <BsDot color="gray" size={24} />
+                            @{user?.username} <BsDot color="gray" size={24} />
                             <Text>{getPostedTime(created_at)}</Text>
                         </Text>
                     </Text>

@@ -13,7 +13,6 @@ import ThreadDetail from "./features/threads/components/ThreadDetail";
 import Follows from "./pages/Follows/Follows";
 import Profile from "./pages/Profile/Profile";
 import Search from "./pages/Search/Search";
-import DetailProfile from "./pages/Profile/DetailProfile";
 
 const theme = extendTheme({
   styles: {
@@ -89,7 +88,6 @@ function App() {
               <Route path="/search" element={<Search />} />
               <Route path="/follows" element={<Follows />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/detail-profile/:id" element={<DetailProfile />} />
             </Route>
 
             <Route path="/" element={<IsLogin />}>
